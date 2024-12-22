@@ -5,7 +5,7 @@ int LINEA = HIGH;
 
 int TURN_AROUND_TIME = 1700;
 int QUARTER_BACK_TIME = 400;
-int EXTRA_FORWARD_TIME = 225;
+int EXTRA_FORWARD_TIME = 100;
 
 
 Servo servoIzq;
@@ -21,6 +21,13 @@ int pinServoIzq = 8;
 
 int irSensorValues[] = {LOW, LOW, LOW, LOW};
 
+unsigned long seed = 12345;    // Semilla inicial
+const unsigned long a = 22695477;  // Constante multiplicadora
+const unsigned long c = 0; // Incremento
+const unsigned long m = 4294967296; // Modulo (2^32)
+int bit = ((seed >> 3) ^ (seed >> 5) ^ seed) & 1;
+int contador_giros = 0;
+int contador_avances = 0;
 
 void setup(){
 
@@ -38,17 +45,74 @@ void setup(){
 }
 
 void loop(){
+  if (contador_avances == 10) {
+    resetea_contadores();
+  }
   readIRSensor();
-  
-//  if(irSensorValues[0] == NO_LINEA && irSensorValues[3] == NO_LINEA && (irSensorValues[1] == LINEA || irSensorValues[2] == LINEA)){ 
-//   
-//}
-//  else if (irSensorValues[0] == LINEA )
-//  {}
-//  else if ( irSensorValues[2] == LINEA)
-//   {}
-//  else if (irSensorValues[0] == NO_LINEA && irSensorValues[2] == NO_LINEA)
-//   {}
+  if(irSensorValues[1] == NO_LINEA && digitalRead(pinIrDer) == LINEA){
+    servoIzq.write(0); 
+    servoDer.write(90);
+  }
+  else if(irSensorValues[1] == LINEA && irSensorValues[2] == NO_LINEA){
+    servoIzq.write(90); 
+    servoDer.write(180);
+  }
+  else if (irSensorValues[1] == LINEA || irSensorValues[2] == LINEA){
+    forwardMotor();
+  }
+  else{
+    if (irSensorValues[0] == LINEA){
+        servoIzq.write(90); 
+        servoDer.write(180);
+	delay(EXTRA_FORWARD_TIME);
+	forwardMotor(EXTRA_FORWARD_TIME/2);
+    }
+    else if (irSensorValues[3] == LINEA){
+        servoIzq.write(0); 
+        servoDer.write(90);
+	delay(EXTRA_FORWARD_TIME/2);
+	forwardMotor(EXTRA_FORWARD_TIME/2);
+    }
+    else{
+      aleatorio();
+    }
+  }
+}
+
+void aleatorio(){
+  if (contador_giros == 0) {
+    seed = (a * seed + c) % m;
+    bit = ((seed >> 3) ^ (seed >> 5) ^ seed) & 1;
+    gira_buscando();
+  }
+  else if (contador_giros == 4) {
+    avanza_pasitos();
+  }
+  else {
+    gira_buscando();
+  }
+}
+
+void avanza_pasitos(){
+  if (contador_avances != 10) {
+    forwardMotor(40);
+    contador_avances++;
+  }
+}
+
+void resetea_contadores(){
+  contador_giros = 0;
+  contador_avances = 0;
+}
+
+void gira_buscando(){
+  if (bit == 0){
+    turnLeft();
+  }
+  else if (bit == 1) {
+    turnRight();
+  }
+  contador_giros++;
 }
 
 void readIRSensor(){
@@ -103,20 +167,24 @@ void turnAround(){
 }
 
 void turnRight(){
-  forwardMotor(EXTRA_FORWARD_TIME);
-  servoIzq.write(0); 
-  servoDer.write(0);
-  delay(QUARTER_BACK_TIME); 
+  //forwardMotor(EXTRA_FORWARD_TIME);
+   servoIzq.write(0); 
+   servoDer.write(90);
+  delay(QUARTER_BACK_TIME/2); 
   forward();
 }
 
 void turnLeft(){
-  forwardMotor(EXTRA_FORWARD_TIME);
-  servoIzq.write(180); 
-  servoDer.write(180);
-  delay(QUARTER_BACK_TIME); 
+  //forwardMotor(EXTRA_FORWARD_TIME);
+   servoIzq.write(90); 
+   servoDer.write(180);
+  delay(QUARTER_BACK_TIME/2); 
   forward();
 }
+
+
+
+
 
 
 

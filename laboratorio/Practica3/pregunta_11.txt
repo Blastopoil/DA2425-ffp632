@@ -1,0 +1,17 @@
+nlog(n):
+Primero iteramos por todos los puntos de la lista, y en cada iteración vamos sumando 
+cada punto para tener un punto medio, y para cada punto calculamos su distancia euclídea
+al eje de coordenadas. Al terminar las iteraciones, obtenemos el valor del punto medio
+y calculamos la distancia entre el punto mas lejano al eje de coordenadas y el mas cercano,
+ya que la distancia entre estos puntos es un buen heurístico ya que podemos asumir que 
+estos puntos van a comenzar bastante lejos el uno del otro. Esta distancia la llamaremos D.
+A continuación, establecemos sobre el punto medio un círculo de radio D/2, o diámetro D.
+Todos los puntos que queden dentro del área de este círculo no podrán tener entre si una
+distancia mayor que D, luego estas comprobaciones no tendremos que hacerlas. Por tanto,
+ahora iteraremos por los puntos que queden fuera del círculo de radio D/2 centrado en el
+punto medio. En un principio, pensamos que para cada uno de esos puntos deberíamos compáralo
+con los demás puntos, pero esto significaría hacer mas comprobaciones de las necesarias,
+de modo que iteraremos por estos puntos pero comparándolos solo con aquellos cuya distancia
+al punto actual sea mayor que D. Tras cada iteración, tendremos una nueva distancia D mayor
+que la anterior que reducirá el numero de comprobaciones restantes. En consecuencia, la 
+complejidad de este algoritmo sería n*log(n)

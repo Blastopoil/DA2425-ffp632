@@ -20,10 +20,10 @@
 
 (define lista (convert-into-pairs-list (cdddr results))) ;Definición de variable principal
 
-(define (ordena-lista-menor-abcisas lista) ;TODO: ¿car es la pos en el eje de abcisas?
+(define (ordena-lista-menor-abcisas lista)
   (sort lista (lambda (a b) (< (car a) (car b)))))
 
-(define (ordena-lista-menor-ordenadas lista) ;TODO: ¿cdr es la pos en el eje de ordeanadas?
+(define (ordena-lista-menor-ordenadas lista)
   (sort lista (lambda (a b) (< (cdr a) (cdr b)))))
 
 ;Devuelve un cons con una lista de la primera mitad en la izquierda y una lista segunda mitad en cada lado
